@@ -1,0 +1,10 @@
+/vendor/
+.env
+*.exe
+*.out
+*.o
+.vscode/
+.idea/
+*.swp
+bin/
+pkg/
