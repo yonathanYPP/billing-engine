@@ -6,6 +6,7 @@ package mocks
 
 import (
 	viewmodels "billing-engine/app/viewmodels"
+	"errors"
 	reflect "reflect"
 	"testing"
 
@@ -73,21 +74,51 @@ func TestMockLoanService_CreateWeeklyLoan(t *testing.T) {
 		want    *viewmodels.LoanViewmodel
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Valid weekly loan creation",
+			args: args{
+				totalAmount: 5500000,
+				weekNumber:  50,
+			},
+			want: &viewmodels.LoanViewmodel{
+				ID:      1,
+				TotalAmount: 5500000,
+				InstallmentAmount:       110000,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Invalid week number (zero)",
+			args:    args{totalAmount: 5500000, weekNumber: 0},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MockLoanService{
-				ctrl:     tt.fields.ctrl,
-				recorder: tt.fields.recorder,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish() 
+
+			mockLoanService := NewMockLoanService(ctrl) 
+
+			if !tt.wantErr {
+				mockLoanService.EXPECT().
+					CreateWeeklyLoan(tt.args.totalAmount, tt.args.weekNumber).
+					Return(tt.want, nil)
+			} else {
+				mockLoanService.EXPECT().
+					CreateWeeklyLoan(tt.args.totalAmount, tt.args.weekNumber).
+					Return(nil, errors.New(tt.name))
 			}
-			got, err := m.CreateWeeklyLoan(tt.args.totalAmount, tt.args.weekNumber)
+
+			got, err := mockLoanService.CreateWeeklyLoan(tt.args.totalAmount, tt.args.weekNumber)
+
 			if (err != nil) != tt.wantErr {
-				t.Errorf("MockLoanService.CreateWeeklyLoan() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CreateWeeklyLoan() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MockLoanService.CreateWeeklyLoan() = %v, want %v", got, tt.want)
+				t.Errorf("CreateWeeklyLoan() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -136,21 +167,48 @@ func TestMockLoanService_GetLoanByID(t *testing.T) {
 		want    *viewmodels.LoanViewmodel
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Valid loan retrieval",
+			args: args{loanID: 1},
+			want: &viewmodels.LoanViewmodel{
+				ID:      1,
+				TotalAmount: 5500000,
+				InstallmentAmount:       110000,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Loan ID not found",
+			args:    args{loanID: 99},
+			want:    nil,
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MockLoanService{
-				ctrl:     tt.fields.ctrl,
-				recorder: tt.fields.recorder,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockLoanService := NewMockLoanService(ctrl)
+
+			if !tt.wantErr {
+				mockLoanService.EXPECT().
+					GetLoanByID(tt.args.loanID).
+					Return(tt.want, nil)
+			} else {
+				mockLoanService.EXPECT().
+					GetLoanByID(tt.args.loanID).
+					Return(nil, errors.New(tt.name))
 			}
-			got, err := m.GetLoanByID(tt.args.loanID)
+
+			got, err := mockLoanService.GetLoanByID(tt.args.loanID)
+
 			if (err != nil) != tt.wantErr {
-				t.Errorf("MockLoanService.GetLoanByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CreateWeeklyLoan() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MockLoanService.GetLoanByID() = %v, want %v", got, tt.want)
+				t.Errorf("CreateWeeklyLoan() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -198,21 +256,54 @@ func TestMockLoanService_GetPendingWeeklyPayment(t *testing.T) {
 		want    *viewmodels.PendingPaymentViewmodel
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Successful payment",
+			fields: fields{
+				ctrl:     gomock.NewController(t),
+				recorder: &MockLoanServiceMockRecorder{},
+			},
+			args: args{
+				loanID:          2,
+			},
+			wantErr: false,
+		},
+		{
+			name: "Payment for non-existent loan",
+			fields: fields{
+				ctrl:     gomock.NewController(t),
+				recorder: &MockLoanServiceMockRecorder{},
+			},
+			args: args{
+				loanID:          99,
+			},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m := &MockLoanService{
-				ctrl:     tt.fields.ctrl,
-				recorder: tt.fields.recorder,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockLoanService := NewMockLoanService(ctrl)
+
+			if !tt.wantErr {
+				mockLoanService.EXPECT().
+					GetPendingWeeklyPayment(tt.args.loanID).
+					Return(tt.want, nil)
+			} else {
+				mockLoanService.EXPECT().
+					GetPendingWeeklyPayment(tt.args.loanID).
+					Return(nil, errors.New(tt.name))
 			}
-			got, err := m.GetPendingWeeklyPayment(tt.args.loanID)
+
+			got, err := mockLoanService.GetPendingWeeklyPayment(tt.args.loanID)
+
 			if (err != nil) != tt.wantErr {
-				t.Errorf("MockLoanService.GetPendingWeeklyPayment() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("CreateWeeklyLoan() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("MockLoanService.GetPendingWeeklyPayment() = %v, want %v", got, tt.want)
+				t.Errorf("CreateWeeklyLoan() = %v, want %v", got, tt.want)
 			}
 		})
 	}

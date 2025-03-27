@@ -9,20 +9,28 @@ USECASE_DIR := app/usecases
 SERVICE_DIR := app/service
 TEST_DIR := app/tests
 
+USECASE_FILES=$(wildcard $(USECASE_DIR)/*.go)
+SERVICE_FILES=$(wildcard $(SERVICE_DIR)/*.go)
+
 .PHONY: test
 test:
 	$(GOTEST) ./$(MOCK_DIR)/...
 
 .PHONY: mock
 mock:
-	mkdir -p $(MOCK_DIR)
-	$(MOCKGEN) -source=$(USECASE_DIR)/loan_usecase.go -destination=$(MOCK_DIR)/mock_loan_usecase.go -package=mocks
-	$(MOCKGEN) -source=$(SERVICE_DIR)/loan_service.go -destination=$(MOCK_DIR)/mock_loan_service.go -package=mocks
+	@for file in $(USECASE_FILES) $(SERVICE_FILES); do \
+		basefile=$$(basename $$file .go); \
+		mkdir -p $(MOCK_DIR)/$$basefile; \
+		$(MOCKGEN) -source=$$file -destination=$(MOCK_DIR)/$$basefile/mock_$$basefile.go -package=mocks; \
+	done
 
 .PHONY: generate-tests
 generate-tests: mock
-	$(GOTESTS) $(MOCK_DIR)/mock_loan_usecase.go
-	$(GOTESTS) $(MOCK_DIR)/mock_loan_service.go
+	@for file in $(USECASE_FILES) $(SERVICE_FILES); do \
+		basefile=$$(basename $$file .go); \
+		mkdir -p $(TEST_DIR)/$$basefile; \
+		$(GOTESTS) $(MOCK_DIR)/$$basefile/mock_$$basefile.go -outputdir=$(TEST_DIR)/$$basefile; \
+	done
 
 .PHONY: clean
 clean:
