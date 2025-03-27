@@ -53,7 +53,7 @@ func (s *LoanServiceImpl) GetLoanByID(loanID uint) (*viewmodels.LoanViewmodel, e
 	return res, err
 }
 
-// CreateLoan menangani validasi sebelum menyimpan loan
+// CreateLoan service untuk create loan
 func (s *LoanServiceImpl) CreateLoan(totalAmount, InstallmentAmount float64, InstallmentType string) (*viewmodels.LoanViewmodel, error) {
 	if totalAmount <= 0 || InstallmentAmount <= 0 {
 		return nil, errors.New("invalid loan details")

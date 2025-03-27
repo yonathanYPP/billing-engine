@@ -14,11 +14,11 @@ type LoanResponse struct {
 
 // PendingPaymentResponse struct
 type PendingPaymentResponse struct {
-	IsDelinquent           bool    `json:"is_delinquent"`
-	OutStandingTotal       float64 `json:"outstanding_total"`
-	PaidInstallmentTotal   float64 `json:"paid_installment_total"`
-	PendingPaymentTotal    float64 `json:"pending_payment_total"`
-	DelinquentPaymentTotal float64 `json:"delinquent_payment_total"`
+	IsDelinquent           bool    `json:"is_delinquent"` // menunjukkan status menunggak atau tidak 
+	OutStandingTotal       float64 `json:"outstanding_total"` // total sisa pinjaman yang perlu dibayar/dilunasi
+	PaidInstallmentTotal   float64 `json:"paid_installment_total"` // total yang sudah dibayar
+	PendingPaymentTotal    float64 `json:"pending_payment_total"` // total bill dari minggu yang menunggak dan minggu ini yang belum dibayar
+	DelinquentPaymentTotal float64 `json:"delinquent_payment_total"` // total bill dari minggu yang menunggak/lewat jatuh tempo
 	PendingPayment         []viewmodels.PaymentViewmodel
 }
 
