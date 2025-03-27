@@ -12,12 +12,17 @@ TEST_DIR := app/tests
 USECASE_FILES=$(wildcard $(USECASE_DIR)/*.go)
 SERVICE_FILES=$(wildcard $(SERVICE_DIR)/*.go)
 
+.PHONY: install-tools
+install-tools:
+	$(GO) install github.com/golang/mock/mockgen@latest
+	$(GO) install github.com/cweill/gotests/gotests@latest
+
 .PHONY: test
 test:
 	$(GOTEST) ./$(MOCK_DIR)/...
 
 .PHONY: mock
-mock:
+mock: install-tools
 	@for file in $(USECASE_FILES) $(SERVICE_FILES); do \
 		basefile=$$(basename $$file .go); \
 		mkdir -p $(MOCK_DIR)/$$basefile; \
