@@ -19,7 +19,7 @@ type PendingPaymentResponse struct {
 	PaidInstallmentTotal   float64 `json:"paid_installment_total"` // total yang sudah dibayar
 	PendingPaymentTotal    float64 `json:"pending_payment_total"` // total bill dari minggu yang menunggak dan minggu ini yang belum dibayar
 	DelinquentPaymentTotal float64 `json:"delinquent_payment_total"` // total bill dari minggu yang menunggak/lewat jatuh tempo
-	PendingPayment         []viewmodels.PaymentViewmodel
+	PendingPayment         []viewmodels.PaymentViewmodel // jadwal pembayaran di minggu ini dan minggu-minggu yang menunggak
 }
 
 // NewLoanResponse konversi model ke response API
